@@ -3,46 +3,75 @@ module ActivityStreams
     include ExtProperties
 
     attr_optional(
-      # SHOULD
       :id,
-      :downstream_duplicates,
-      :upstream_duplicates,
-      # MAY
-      :attachments,
-      :author,
+      :type,
+      :attachment,
+      :attributedTo,
+      :audience,
       :content,
-      :display_name,
+      :contentMap,
+      :name,
+      :nameMap,
+      :endTime,
+      :generator,
+      :icon,
       :image,
-      :object_type,
+      :inReplyTo,
+      :location,
+      :preview,
       :published,
+      :replies,
+      :startTime,
       :summary,
+      :summaryMap,
+      :tag,
       :updated,
-      :url
+      :url,
+      :to,
+      :bto,
+      :cc,
+      :bcc,
+      :mediaType,
+      :duration
     )
 
     def initialize(attributes = {})
       _type_ = if self.class.superclass == Object
         self.class.name.demodulize.underscore
       end
-      attributes = {:object_type => _type_}.merge(attributes)
+      attributes = {:type => _type_}.merge(attributes)
       super attributes
     end
 
     def validate_attributes!
       super
-      [:id, :object_type, :url].each do |_attr_|
+      [:id, :type, :url].each do |_attr_|
         to_iri _attr_
       end
-      [:published, :updated].each do |_attr_|
+      [:startTime, :endTime, :published, :updated].each do |_attr_|
         to_time _attr_
       end
-      validate_attribute! :author, Object
-      validate_attribute! :image, MediaLink
-      validate_attribute! :attachments, Object, :arrayed!
-      [:downstream_duplicates, :upstream_duplicates].each do |_attr_|
-        to_iri _attr_, :arrayed!
-      end
-      # TODO: display_name MUST NOT include HTML
+      validate_attribute! :attachment, [Object, ActivityStreams::Link]
+      validate_attribute! :attributedTo, [Object, ActivityStreams::Link]
+      validate_attribute! :audience, [Object, ActivityStreams::Link]
+      validate_attribute! :context, [Object, ActivityStreams::Link]
+      validate_attribute! :generator, [Object, ActivityStreams::Link]
+      validate_attribute! :icon, [Image, ActivityStreams::Link]
+      validate_attribute! :image, [Image, ActivityStreams::Link]
+      validate_attribute! :inReplyTo, [Object, ActivityStreams::Link]
+      validate_attribute! :location, [Object, ActivityStreams::Link]
+      validate_attribute! :preview, [Object, ActivityStreams::Link]
+      validate_attribute! :replies, [ActivityStreams::Collection]
+      validate_attribute! :tag, [Object, ActivityStreams::Link]
+      validate_attribute! :to, [Object, ActivityStreams::Link]
+      validate_attribute! :bto, [Object, ActivityStreams::Link]
+      validate_attribute! :cc, [Object, ActivityStreams::Link]
+      validate_attribute! :bcc, [Object, ActivityStreams::Link]
+
+      # TODO:
+      # - name MUST NOT include HTML
+      # - duration MUST be expressed as an xsd:duration
+      #   example: 5 seconds is represented as "PT5S"
     end
 
     def recommended_verbs
@@ -56,6 +85,6 @@ module ActivityStreams
   end
 end
 
-Dir[File.dirname(__FILE__) + '/object/*.rb'].each do |file| 
+Dir[File.dirname(__FILE__) + '/object/*.rb'].each do |file|
   require file
 end
