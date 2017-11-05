@@ -1,16 +1,16 @@
 module ActivityStreams
   module Validator
-    def validate_attribute!(attribute, klass, arrayed = false)
+    def validate_attribute!(attribute, klasses, arrayed = false)
       _value_ = self.send attribute
       return if _value_.blank?
       if arrayed
         _value_.all? do |_v_|
-          _v_.is_a?(klass)
+          klasses.any? { |klass| _v_.is_a? klass }
         end or
-        raise InvalidAttribute.new("#{attribute} should be an array of #{klass}")
+        raise InvalidAttribute.new("#{attribute} should be an array of #{klasses.join('|')}")
       else
-        _value_.is_a?(klass) or
-        raise InvalidAttribute.new("#{attribute} should be a #{klass}")
+        klasses.any? { |klass| _value_.is_a? klass } or
+        raise InvalidAttribute.new("#{attribute} should be a #{klasses.join('|')}")
       end
     end
 
