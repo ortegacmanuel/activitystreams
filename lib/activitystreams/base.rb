@@ -24,6 +24,8 @@ module ActivityStreams
           _attr_.to_s.camelize(:lower).to_sym => case _value_
           when Symbol, Addressable::URI
             _value_.to_s
+          when Array
+            _value_.collect { |v| v.to_s }
           when Time
             _value_.iso8601
           when ActivityStreams::Base
