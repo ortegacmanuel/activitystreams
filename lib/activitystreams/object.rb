@@ -37,7 +37,7 @@ module ActivityStreams
 
     def initialize(attributes = {})
       _type_ = if self.class.superclass == Object
-        self.class.name.demodulize.underscore
+        self.class.name.demodulize.camelize
       end
       attributes = {:type => _type_}.merge(attributes)
       super attributes
