@@ -17,7 +17,7 @@ module ActivityStreams
       attr_missing!
     end
 
-    def as_json(options = {}, context = true)
+    def as_json(options = {}, toplevel = true)
       hash = (required_attributes + optional_attributes).inject({}) do |hash, _attr_|
         _value_ = self.send _attr_
         hash.merge!(
@@ -27,7 +27,7 @@ module ActivityStreams
           when Time
             _value_.iso8601
           when ActivityStreams::Base
-            _value_.as_json(options = {}, false)
+            _value_.as_json({}, false)
           else
             _value_
           end
@@ -35,8 +35,10 @@ module ActivityStreams
       end.delete_if do |k,v|
         v.blank?
       end
-      hash.delete :context unless context
-      hash
+      # Storing the value of the context attribute in a local variable
+      context = hash.delete :context
+      # Adding @context attribute only if top-level object
+      Hash[toplevel ? {:@context => context} : {} ].merge!(hash)
     end
   end
 end
