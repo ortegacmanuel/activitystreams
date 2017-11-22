@@ -63,10 +63,10 @@ module ActivityStreams
       validate_attribute! :preview, [Object, ActivityStreams::Link]
       validate_attribute! :replies, [ActivityStreams::Collection]
       validate_attribute! :tag, [Object, ActivityStreams::Link]
-      validate_attribute! :to, [Object, ActivityStreams::Link]
-      validate_attribute! :bto, [Object, ActivityStreams::Link]
-      validate_attribute! :cc, [Object, ActivityStreams::Link]
-      validate_attribute! :bcc, [Object, ActivityStreams::Link]
+
+      [:to, :bto, :cc, :bcc].each do |_attr_|
+        to_iri _attr_, :arrayed!
+      end
 
       # TODO:
       # - name MUST NOT include HTML
